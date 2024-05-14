@@ -6,6 +6,7 @@ module Api
         rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
         rescue_from ActiveRecord::RecordNotFound, with: :render_record_not_found_response
         rescue_from Errors::Api::Unauthenticated, with: :render_unauthenticated_response
+        rescue_from Errors::Api::Unauthorized, with: :render_unauthorized_response
 
         protected
 
@@ -18,6 +19,10 @@ module Api
         end
 
         def render_unauthenticated_response(error, status: :unauthorized)
+          render json: error.to_hash, status:
+        end
+
+        def render_unauthorized_response(error, status: :unauthorized)
           render json: error.to_hash, status:
         end
       end

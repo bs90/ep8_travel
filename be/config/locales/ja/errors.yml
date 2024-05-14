@@ -8,7 +8,9 @@ ja:
       bad_request: "無効なリクエストでした。"
       unauthenticated: "メール又はパスワードに誤りがありますあります。もう一度入力してください。"
       invalid_token: "無効なトーケン又は期限が満了しました。"
+      invalid_email_domain: "sun-asteriskメールドメインのみ許可されます。"
     codes:
+      invalid_email_domain: 996
       invalid_token: 997
       unauthenticated: 998
       bad_request: 999

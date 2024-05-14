@@ -1,4 +1,8 @@
 class Api::V1::SessionsController < ApplicationController
+  require 'net/http'
+  require 'uri'
+  include TokensHelper
+  include SessionsHelper
 
   def create
     admin = Admin.find_by!(email: signin_params[:email])
@@ -40,6 +44,28 @@ class Api::V1::SessionsController < ApplicationController
     }, status: :ok
   end
 
+  def google_oauth_callback
+    gg_service = GoogleAuthService.instance
+    gg_user = gg_service.google_user_info(oauth2_params[:access_token])
+
+    unless allowed_email_domain?(gg_user)
+      raise Errors::Api::Unauthorized.new(
+        code: I18n.t('errors.codes.invalid_email_domain'),
+        message: I18n.t('errors.messages.invalid_email_domain')
+      )
+    end
+
+    user = find_or_create_user(gg_user)
+    access_token, refresh_token = generate_tokens_for(user)
+
+    render json: {
+      success: true,
+      data: {
+        access_token:,
+        refresh_token:
+      }
+    }
+  end
 
   private
 
@@ -47,17 +73,21 @@ class Api::V1::SessionsController < ApplicationController
     params.permit(:email, :password)
   end
 
-  def generate_tokens_for(user)
-    access_token = JsonWebToken.encode({user_id: user.id})
-    refresh_token = JsonWebToken.encode({ user_id: user.id },
-                                        Settings.token.refresh_token_exp.to_i.days.from_now)
-    [access_token, refresh_token]
+  def oauth2_params
+    params.permit(:access_token, :refresh_token)
   end
 
-  def valid_refresh_token?(token, user)
-    payload = JsonWebToken.decode(token)
-    payload[:user_id] == user.id
-  rescue StandardError
-    false
+  def allowed_email_domain?(user_data)
+    user_data.key?(:hd) && Settings.gg_oauth.allowed_email_domains.include?(user_data[:hd])
+  end
+
+  def find_or_create_user(user_data)
+    User.find_or_initialize_by(email: user_data[:email]).tap do |user|
+      if user.new_record?
+        user.name = user_data[:name]
+        user.avatar = user_data[:picture]
+        user.save!
+      end
+    end
   end
 end
