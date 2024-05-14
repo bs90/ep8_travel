@@ -76,17 +76,21 @@ GEM
       mutex_m
       tzinfo (~> 2.0)
     base64 (0.2.0)
+    bcrypt (3.1.20)
     bigdecimal (3.1.8)
     bootsnap (1.18.3)
       msgpack (~> 1.2)
     builder (3.2.4)
     concurrent-ruby (1.2.3)
+    config (5.4.0)
+      deep_merge (~> 1.2, >= 1.2.1)
     connection_pool (2.4.1)
     crass (1.0.6)
     date (3.3.4)
     debug (1.9.2)
       irb (~> 1.10)
       reline (>= 0.3.8)
+    deep_merge (1.2.2)
     dotenv (3.1.2)
     dotenv-rails (3.1.2)
       dotenv (= 3.1.2)
@@ -101,6 +105,8 @@ GEM
     irb (1.13.1)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
+    jwt (2.8.1)
+      base64
     loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -125,6 +131,8 @@ GEM
     net-smtp (0.5.0)
       net-protocol
     nio4r (2.7.3)
+    nokogiri (1.16.4-aarch64-linux)
+      racc (~> 1.4)
     nokogiri (1.16.4-arm64-darwin)
       racc (~> 1.4)
     psych (5.1.2)
@@ -133,6 +141,8 @@ GEM
       nio4r (~> 2.0)
     racc (1.7.3)
     rack (3.0.10)
+    rack-cors (2.0.2)
+      rack (>= 2.0.0)
     rack-session (2.0.0)
       rack (>= 3.0.0)
     rack-test (2.1.0)
@@ -186,14 +196,19 @@ GEM
     zeitwerk (2.6.13)
 
 PLATFORMS
+  aarch64-linux
   arm64-darwin-23
 
 DEPENDENCIES
+  bcrypt (~> 3.1.7)
   bootsnap
+  config
   debug
   dotenv-rails
+  jwt
   mysql2 (~> 0.5)
   puma (>= 5.0)
+  rack-cors
   rails (~> 7.1.3, >= 7.1.3.2)
   tzinfo-data
 
