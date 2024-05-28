@@ -6,7 +6,6 @@ services:
     env_file:
       - .env
     environment:
-      MYSQL_USER: ${DB_USERNAME}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
       - "3306:3306"
@@ -17,7 +16,7 @@ services:
     build: .
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     volumes:
-      - .:/api/
+      - .:/app/
     ports:
       - 3000:3000
     depends_on:
