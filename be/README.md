@@ -1,24 +1,16 @@
 # README
+- Run
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+```docker-compose up --build```
 
-Things you may want to cover:
+- Create database (First time)
 
-* Ruby version
+```docker-compose exec api rails db:create```
 
-* System dependencies
+- Migrate databse
 
-* Configuration
+```docker-compose exec api rails db:migrate```
 
-* Database creation
+- Generate swagger file
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+```docker-compose exec api rails rswag:specs:swaggerize RAILS_ENV=test```
