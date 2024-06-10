@@ -12,7 +12,7 @@ class Api::V1::AdminsController < ApplicationController
         status: 'error',
         message: 'Signup failed!',
         errors: admin.errors
-      }, status: :unprocessable_entity    
+      }, status: :unprocessable_entity
     end
   end
 

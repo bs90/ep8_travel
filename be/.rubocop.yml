@@ -256,3 +256,6 @@ RSpec/ChangeByZero:
 
 Naming/VariableNumber:
   Enabled: false
+
+RSpec/EmptyExampleGroup:
+  Enabled: false

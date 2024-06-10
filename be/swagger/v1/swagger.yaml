@@ -1,0 +1,184 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/api/v1/signup":
+    post:
+      summary: Sign up
+      tags:
+      - Admins
+      parameters: []
+      responses:
+        '200':
+          description: Sign up successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      email:
+                        type: string
+                      name:
+                        type: string
+                      password_digest:
+                        type: string
+                      refresh_token:
+                        type: string
+                      created_at:
+                        type: string
+                      updated_at:
+                        type: string
+                    required:
+                    - id
+                    - email
+                    - name
+                    - password_digest
+                    - refresh_token
+                    - created_at
+                    - updated_at
+        '422':
+          description: Sign up fail (validation error)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  email:
+                    type: string
+                    value: Minh@gmail.com
+                  name:
+                    type: string
+                  password_digest:
+                    type: string
+                  refresh_token:
+                    type: string
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+                required:
+                - id
+                - email
+                - name
+                - password_digest
+                - refresh_token
+                - created_at
+                - updated_at
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                name:
+                  type: string
+              required:
+              - email
+              - password
+              - name
+            examples:
+              basic:
+                summary: Success Example
+                value:
+                  email: minh@gmail.com
+                  password: '123456'
+                  name: Minh
+  "/api/v1/signin":
+    post:
+      summary: Login
+      tags:
+      - Admins
+      parameters: []
+      responses:
+        '200':
+          description: Login successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  email:
+                    type: string
+                  name:
+                    type: string
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                required:
+                - status
+                - email
+                - name
+                - accessToken
+                - refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+              - email
+              - password
+            examples:
+              basic:
+                summary: Success Example
+                value:
+                  email: minh@gmail.com
+                  password: '123456'
+  "/api/v1/refresh":
+    post:
+      summary: Refresh
+      tags:
+      - Admins
+      security:
+      - cookieAuth: []
+      parameters:
+      - name: refresh_token
+        in: cookie
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Refresh successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  accessToken:
+                    type: string
+                required:
+                - status
+                - accessToken
+servers:
+- url: http://localhost:3000
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: refresh_token
+security:
+  cookieAuth: []
