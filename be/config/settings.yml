@@ -13,4 +13,13 @@ gg_oauth:
   userinfo_url: https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=
   token_url: https://accounts.google.com/o/oauth2/token
   allowed_email_domains:
-    - "sun-asterisk.com"
+    - 'sun-asterisk.com'
+
+aws_s3:
+  max_file_size: 50
+  allowed_file_types: 
+    - 'image/jpeg'
+    - 'image/png'
+    - 'image/gif'
+    - 'video/mp4'
+  url_expires_in: 3600

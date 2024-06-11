@@ -1,14 +1,15 @@
 module Errors::Api
-  class Unauthenticated < Errors::BaseError
-    attr_reader :resource
+  class BadRequest < Errors::BaseError
+    attr_reader :resource, :field
     def initialize(error)
       super(error)
       @resource = error[:resource]
+      @field = error[:field]
     end
 
     def serialize_errors
       [
-        {code:, message:, resource:}
+        {code:, message:, field:, resource:}
       ]
     end
   end

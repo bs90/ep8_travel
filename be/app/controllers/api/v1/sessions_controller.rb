@@ -7,10 +7,7 @@ class Api::V1::SessionsController < ApplicationController
   def create
     admin = Admin.find_by!(email: signin_params[:email])
     unless admin.authenticate(signin_params[:password])
-      raise Errors::Api::Unauthenticated.new(
-        code: I18n.t('errors.codes.unauthenticated'),
-        message: I18n.t('errors.messages.unauthenticated')
-      )
+      raise Errors::Api::Unauthenticated, SessionErrorConstant::AUTHENTICATION_FAILED
     end
 
     access_token, refresh_token = generate_tokens_for(admin)
@@ -30,10 +27,7 @@ class Api::V1::SessionsController < ApplicationController
   def refresh_token
     user = Admin.find_by(refresh_token: params[:refresh_token])
     unless user && valid_refresh_token?(params[:refresh_token], user)
-      raise Errors::Api::Unauthenticated.new(
-        code: I18n.t('errors.codes.invalid_token'),
-        message: I18n.t('errors.messages.invalid_token')
-      )
+      raise Errors::Api::Unauthenticated, SessionErrorConstant::INVALID_TOKEN
     end
     access_token = JsonWebToken.encode(user_id: user.id)
     render json: {
@@ -49,14 +43,13 @@ class Api::V1::SessionsController < ApplicationController
     gg_user = gg_service.google_user_info(oauth2_params[:access_token])
 
     unless allowed_email_domain?(gg_user)
-      raise Errors::Api::Unauthorized.new(
-        code: I18n.t('errors.codes.invalid_email_domain'),
-        message: I18n.t('errors.messages.invalid_email_domain')
-      )
+      raise Errors::Api::Unauthorized, SessionErrorConstant::NOT_ALLOWED_EMAIL_DOMAIN
     end
 
     user = find_or_create_user(gg_user)
     access_token, refresh_token = generate_tokens_for(user)
+    user.refresh_token = refresh_token
+    user.save!(validate: false)
 
     render json: {
       success: true,

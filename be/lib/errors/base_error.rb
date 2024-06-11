@@ -1,11 +1,11 @@
 module Errors
   class BaseError < StandardError
-    attr_reader :code, :message
+    attr_reader :error, :code, :message
 
-    def initialize(code: nil, message: nil)
-      super
-      @message = message
-      @code = code
+    def initialize(error)
+      @error = error
+      @message = error[:message]
+      @code = error[:code]
     end
 
     def serialize_errors
