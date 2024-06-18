@@ -1,19 +1,15 @@
 class Api::V1::AdminsController < ApplicationController
   def create
     admin = Admin.new(admin_params)
-    if admin.save
-      render json: {
-        status: 'success',
+    admin.save!
+    render json: {
+      success: true,
+      data: {
         email: admin.email,
         name: admin.name
-      }, status: :ok
-    else
-      render json: {
-        status: 'error',
-        message: 'Signup failed!',
-        errors: admin.errors
-      }, status: :unprocessable_entity    
-    end
+      }
+    }, status: :ok
+
   end
 
   private
