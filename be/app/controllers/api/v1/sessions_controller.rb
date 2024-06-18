@@ -1,60 +1,43 @@
 class Api::V1::SessionsController < ApplicationController
 
   def create
-    unless signin_params.key?(:email) && signin_params.key?(:password)
-      return {
-        status: 'error',
-        message: 'Email and password is required'
-      }, status: :bad_request
+    admin = Admin.find_by!(email: signin_params[:email])
+    unless admin.authenticate(signin_params[:password])
+      raise Errors::Api::Unauthenticated.new(
+        code: I18n.t('errors.codes.unauthenticated'),
+        message: I18n.t('errors.messages.unauthenticated')
+      )
     end
-    admin = Admin.find_by(email: signin_params[:email])
-    if admin.authenticate(signin_params[:password])
-      access_token, refresh_token = generate_tokens_for(admin)
-      admin.refresh_token = refresh_token
-      if admin.save(validate: false)
-        render json: {
-          status: 'success',
-          name: admin.name,
-          email: admin.email,
-          accessToken: access_token,
-          refreshToken: refresh_token
-        }, status: :ok
-      else
-        render json: {
-          status: 'error',
-          message: 'Login failed',
-          errors: admin.errors
-        }, status: :unauthorized
-      end
-    else
-      render json: {
-        status: 'error',
-        message: 'Email or password is incorrect'
-      }, status: :unauthorized
-    end
+
+    access_token, refresh_token = generate_tokens_for(admin)
+    admin.refresh_token = refresh_token
+    admin.save!(validate: false)
+    render json: {
+      success: true,
+      data: {
+        name: admin.name,
+        email: admin.email,
+        accessToken: access_token,
+        refreshToken: refresh_token
+      }
+    }, status: :ok
   end
 
   def refresh_token
-    unless cookies[:refresh_token]
-      return render json: {
-        status: 'error',
-        message: 'Refresh token is missing'
-      }, status: :unauthorized
+    user = Admin.find_by(refresh_token: params[:refresh_token])
+    unless user && valid_refresh_token?(params[:refresh_token], user)
+      raise Errors::Api::Unauthenticated.new(
+        code: I18n.t('errors.codes.invalid_token'),
+        message: I18n.t('errors.messages.invalid_token')
+      )
     end
-
-    user = Admin.find_by(refresh_token: cookies[:refresh_token])
-    if user && valid_refresh_token?(cookies[:refresh_token], user)
-      access_token = JsonWebToken.encode(user_id: user.id)
-      render json: {
-        status: 'success',
+    access_token = JsonWebToken.encode(user_id: user.id)
+    render json: {
+      success: true,
+      data: {
         accessToken: access_token
-      }, status: :ok
-    else
-      render json: {
-        status: 'error',
-        message: 'Invalid refresh token or expired'
-      }, status: :forbidden
-    end
+      }
+    }, status: :ok
   end
 
 

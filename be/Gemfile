@@ -52,3 +52,4 @@ end
 gem 'config'
 gem 'dotenv-rails'
 gem 'jwt'
+gem 'rails-i18n'
