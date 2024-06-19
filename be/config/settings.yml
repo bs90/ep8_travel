@@ -8,3 +8,9 @@ user:
 token:
   access_token_exp: 4
   refresh_token_exp: 7
+
+gg_oauth:
+  userinfo_url: https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=
+  token_url: https://accounts.google.com/o/oauth2/token
+  allowed_email_domains:
+    - "sun-asterisk.com"

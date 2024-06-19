@@ -8,7 +8,9 @@ en:
       bad_request: "missing params"
       unauthenticated: "email or password is incorrect"
       invalid_token: "invalid token or token expired"
+      invalid_email_domain: "Only allow the sun-asterisk domain for email"
     codes:
+      invalid_email_domain: 996
       invalid_token: 997
       unauthenticated: 998
       bad_request: 999
