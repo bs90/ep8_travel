@@ -12,7 +12,7 @@ class GoogleAuthService
     url = URI.parse(Settings.gg_oauth.userinfo_url + access_token)
     response = make_request(url, :get, {'Authorization' => "Bearer #{access_token}"})
 
-    raise Errors::Api::Unauthorized unless response.is_a?(Net::HTTPSuccess)
+    raise Errors::Api::Unauthorized, SessionErrorConstant::INVALID_TOKEN unless response.is_a?(Net::HTTPSuccess)
 
     return JSON.parse(response.body, symbolize_names: true)
   end

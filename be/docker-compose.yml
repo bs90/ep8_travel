@@ -10,19 +10,29 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_vol:/var/lib/mysql
 
   api:
     build: .
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    entrypoint: ["./entrypoint.sh"]
     volumes:
       - .:/app/
     ports:
-      - 3000:3000
+      - 8080:8080
     depends_on:
       - db
+      - redis
     stdin_open: true
     tty: true
 
+  redis: 
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_vol:/data
+
+
 volumes:
-  mysql_data:
+  mysql_vol:
+  redis_vol:
