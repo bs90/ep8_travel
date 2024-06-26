@@ -21,7 +21,7 @@ class S3Service
     signer.presigned_url(
       :get_object,
       bucket: @bucket,
-      key: 
+      key:
     )
   end
 end

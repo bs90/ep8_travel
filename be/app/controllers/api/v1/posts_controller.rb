@@ -1,6 +1,17 @@
 class Api::V1::PostsController < ApplicationController
   before_action :check_logged_in!, only: [:create]
 
+  def show
+    post = Post.find(params[:id])
+    photo_url = S3Service.instance.get_file_url(key: post.upload_files[0][:key])
+    render json: {
+      success: true,
+      data: {
+        caption: post.caption,
+        photo_url:
+      }
+    }
+  end
   def create
     post_photo = prepare_create_file(
       presigned_url: post_params[:presigned_url],
@@ -11,7 +22,7 @@ class Api::V1::PostsController < ApplicationController
       @post.upload_files.create!(
         file_name: post_photo[:file_name],
         key: post_photo[:key],
-        content_type: post_photo[:file_name],
+        content_type: post_photo[:file_name]
       )
     end
     render json: {
@@ -20,17 +31,6 @@ class Api::V1::PostsController < ApplicationController
     }
   end
 
-  def show 
-    post = Post.find(params[:id])
-    photo_url = S3Service.instance.get_file_url(key: post.upload_files[0][:key])
-    render json: {
-      success: true,
-      data: {
-        caption: post.caption,
-        photo_url: photo_url
-      }
-    }
-  end
   private
 
   def post_params
@@ -38,12 +38,11 @@ class Api::V1::PostsController < ApplicationController
   end
 
   def prepare_create_file(presigned_url:, key:)
-    redis_file_info = RedisClientService.new.get_presigned_url_cache(
+    RedisClientService.new.get_presigned_url_cache(
       presigned_url:,
       key:
     )
-    raise_file_error unless redis_file_info.present?
-    redis_file_info
+    raise_file_error if redis_file_info.blank?
   end
 
 

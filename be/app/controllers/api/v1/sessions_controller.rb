@@ -3,21 +3,21 @@ class Api::V1::SessionsController < ApplicationController
   require 'uri'
   include TokensHelper
   include SessionsHelper
+  before_action :find_user_by_email!, only: [:create]
 
   def create
-    admin = Admin.find_by!(email: signin_params[:email])
-    unless admin.authenticate(signin_params[:password])
+    unless @user.authenticate(signin_params[:password])
       raise Errors::Api::Unauthenticated, SessionErrorConstant::AUTHENTICATION_FAILED
     end
 
-    access_token, refresh_token = generate_tokens_for(admin)
-    admin.refresh_token = refresh_token
-    admin.save!(validate: false)
+    access_token, refresh_token = generate_tokens_for(@user)
+    @user.refresh_token = refresh_token
+    @user.save!(validate: false)
     render json: {
       success: true,
       data: {
-        name: admin.name,
-        email: admin.email,
+        name: @user.name,
+        email: @user.email,
         accessToken: access_token,
         refreshToken: refresh_token
       }
@@ -25,11 +25,12 @@ class Api::V1::SessionsController < ApplicationController
   end
 
   def refresh_token
-    user = Admin.find_by(refresh_token: params[:refresh_token])
+    user = User.find_by(refresh_token: params[:refresh_token])
     unless user && valid_refresh_token?(params[:refresh_token], user)
       raise Errors::Api::Unauthenticated, SessionErrorConstant::INVALID_TOKEN
     end
-    access_token = JsonWebToken.encode(user_id: user.id)
+
+    access_token, = generate_tokens_for(user)
     render json: {
       success: true,
       data: {
@@ -78,9 +79,14 @@ class Api::V1::SessionsController < ApplicationController
     User.find_or_initialize_by(email: user_data[:email]).tap do |user|
       if user.new_record?
         user.name = user_data[:name]
-        user.avatar = user_data[:picture]
+        user.picture = user_data[:picture]
+        user.password = User.secure_password
         user.save!
       end
     end
+  end
+
+  def find_user_by_email!
+    @user = User.find_by!(email: params[:email])
   end
 end

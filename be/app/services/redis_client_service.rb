@@ -1,12 +1,12 @@
 class RedisClientService
   def initialize
-    @redis = $redis
+    @redis = Redis.new(url: ENV['REDIS_URL'] || 'redis://redis:6379/0')
   end
 
   def set_presigned_url_cache(presigned_url:, key:, file_name:, content_type:)
     cache_key = "presigned-url:#{presigned_url}"
     value = {
-      key: key,
+      key:,
       file_name:,
       content_type:
     }
@@ -18,6 +18,7 @@ class RedisClientService
 
   def get_presigned_url_cache(presigned_url:, key:)
     return nil unless presigned_url.present? && key.present?
+
     cache_key = "presigned-url:#{presigned_url}"
     value = @redis.get(cache_key)
     JSON.parse(value, symbolize_names: true) if value

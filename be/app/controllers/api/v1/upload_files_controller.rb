@@ -3,26 +3,25 @@ class Api::V1::UploadFilesController < ApplicationController
   def presigned_url
     file_name = params[:file_name]
     content_type = params[:content_type]
-    max_file_size = Settings.aws_s3.max_file_size.to_i.megabytes
 
     raise_invalid_content_type unless Settings.aws_s3.allowed_file_types.include?(content_type)
-    
+
     key = generate_uniq_key(file_name)
-    presigned_url = S3Service.instance.presigned_url(key: key, content_type: content_type)
+    presigned_url = S3Service.instance.presigned_url(key:, content_type:)
     RedisClientService.new.set_presigned_url_cache(
       presigned_url:,
       key:,
       file_name:,
       content_type:
     )
-    render json:{
+    render json: {
       success: true,
       data: {
         url: presigned_url,
-        key: key
+        key:
       }
     }
-  end 
+  end
 
   private
 

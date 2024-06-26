@@ -1,6 +1,7 @@
 module Errors::Api
   class BadRequest < Errors::BaseError
     attr_reader :resource, :field
+
     def initialize(error)
       super(error)
       @resource = error[:resource]

@@ -8,9 +8,9 @@ class JsonWebToken
   end
 
   def self.decode(token)
-    begin
-      decoded_token = JWT.decode(token, SECRET, true, { algorithm: ALG }).first
+
+    decoded_token = JWT.decode(token, SECRET, true, { algorithm: ALG }).first
       ActiveSupport::HashWithIndifferentAccess.new(decoded_token)
-    end
+
   end
 end

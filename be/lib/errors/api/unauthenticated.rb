@@ -1,6 +1,7 @@
 module Errors::Api
   class Unauthenticated < Errors::BaseError
     attr_reader :resource
+
     def initialize(error)
       super(error)
       @resource = error[:resource]

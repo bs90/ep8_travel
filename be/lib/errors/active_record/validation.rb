@@ -5,6 +5,7 @@ module Errors
 
       def initialize(record)
         @record = record
+        super({code: nil, message: nil})
       end
 
       def serialize_errors(full_messages: true)
