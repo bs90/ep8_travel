@@ -6,7 +6,7 @@ class ApplicationController < ActionController::API
   private
 
   def set_locale
-    accepted_language = request.headers["Accept-Language"]
+    accepted_language = request.headers['Accept-Language']
     if accepted_language.present?
       preferred_locale = accepted_language.scan(/^[a-z]{2}/).first&.to_sym
       I18n.locale = I18n.available_locales.include?(preferred_locale) ? preferred_locale : I18n.default_locale

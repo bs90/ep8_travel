@@ -1,6 +1,6 @@
 module Api::V1::RescueExceptions
   extend ActiveSupport::Concern
-  included do
+  included do # rubocop:disable Metrics/BlockLength
     rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
     rescue_from ActiveRecord::RecordNotFound, with: :render_record_not_found_response
     rescue_from Errors::Api::Unauthenticated, with: :render_unauthenticated_response
@@ -12,7 +12,7 @@ module Api::V1::RescueExceptions
       JWT::VerificationError,
       with: :render_jwt_error
     )
-    
+
     protected
 
     def render_unprocessable_entity_response(error, status: :unprocessable_entity)

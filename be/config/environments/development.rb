@@ -1,5 +1,5 @@
 require 'active_support/core_ext/integer/time'
-require 'dotenv/load' if Rails.env.development? || Rails.env.test?
+require 'dotenv/load' if Rails.env.local?
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 

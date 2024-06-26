@@ -6,6 +6,7 @@ module Errors
       @error = error
       @message = error[:message]
       @code = error[:code]
+      super(@message)
     end
 
     def serialize_errors

@@ -4,4 +4,3 @@ class UploadFile < ApplicationRecord
   validates :content_type, presence: true
   validates :key, presence: true
 end
-

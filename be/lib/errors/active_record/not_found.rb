@@ -4,10 +4,10 @@ module Errors
       attr_reader :resource, :field, :detail
 
       def initialize(error)
-        super
         @resource = error.model.underscore
         @field = error.primary_key
         @detail = error.class.to_s.split('::')[1].underscore
+        super({code: nil, message: nil})
       end
 
       def serialize_errors
