@@ -12,17 +12,19 @@ class Api::V1::PostsController < ApplicationController
       }
     }
   end
+
   def create
     post_photo = prepare_create_file(
       presigned_url: post_params[:presigned_url],
-      key: post_params[:image_key]
+      key: post_params[:caption]
     )
     ActiveRecord::Base.transaction do
       @post = current_user.posts.create!(caption: post_params[:caption])
       @post.upload_files.create!(
         file_name: post_photo[:file_name],
         key: post_photo[:key],
-        content_type: post_photo[:file_name]
+        content_type: post_photo[:file_name],
+        metadata: post_params[:metadata].to_json
       )
     end
     render json: {
@@ -34,22 +36,24 @@ class Api::V1::PostsController < ApplicationController
   private
 
   def post_params
-    params.permit(:caption, :presigned_url, :image_key)
+    params.permit(:caption, :presigned_url, :image_key,
+                  metadata: [:long, :lat, :location, :shooting_date])
   end
 
   def prepare_create_file(presigned_url:, key:)
-    RedisClientService.new.get_presigned_url_cache(
+    redis_file_info = RedisClientService.new.get_presigned_url_cache(
       presigned_url:,
       key:
     )
     raise_file_error if redis_file_info.blank?
+    redis_file_info
   end
 
 
   def raise_file_error
-    raise Errors::Api::Unauthenticated.new(
-      code: I18n.t('file error'),
-      message: I18n.t('file is empty')
+    raise Errors::Api::BadRequest.new(
+      code: I18n.t('errors.codes.file_empty'),
+      message: I18n.t('errors.messages.file_empty')
     )
   end
 end
