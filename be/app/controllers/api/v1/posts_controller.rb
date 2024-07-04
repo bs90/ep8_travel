@@ -1,6 +1,17 @@
 class Api::V1::PostsController < ApplicationController
   before_action :check_logged_in!, only: [:create]
 
+  def index
+    pagy_info, posts = pagy_posts Post.includes(:upload_files).all.newest
+    render json: {
+      sucess: true,
+      data: {
+        posts:,
+        pagy_info:,
+      }
+    }
+  end
+
   def show
     post = Post.find(params[:id])
     photo_url = S3Service.instance.get_file_url(key: post.upload_files[0][:key])
@@ -30,7 +41,7 @@ class Api::V1::PostsController < ApplicationController
     render json: {
       sucess: true,
       data: @post
-    }
+    }, status: :created
   end
 
   private
