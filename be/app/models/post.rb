@@ -4,4 +4,5 @@ class Post < ApplicationRecord
   accepts_nested_attributes_for :upload_files, allow_destroy: true
 
   validates :caption, presence: true
+  scope :newest, -> { reorder(updated_at: :desc) }
 end

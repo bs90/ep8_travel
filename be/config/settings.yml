@@ -23,3 +23,10 @@ aws_s3:
     - 'image/gif'
     - 'video/mp4'
   url_expires_in: 3600
+
+pagy:
+  except_keys:
+    - vars
+    - overflow
+  page: 1
+  items: 10
