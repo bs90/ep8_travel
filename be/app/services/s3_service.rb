@@ -2,6 +2,7 @@ class S3Service
   include Singleton
   def initialize
     @bucket = ENV.fetch('S3_BUCKET_NAME', 'ep8-travel-blog')
+    @s3_client = Aws::S3::Client.new
   end
 
   def presigned_url(key:, content_type:, expires_in: Settings.aws_s3.url_expires_in.to_i)
@@ -11,16 +12,16 @@ class S3Service
       bucket: @bucket,
       key:,
       content_type:,
-      acl: 'private',
+      acl: 'public-read',
       expires_in:
     )
   end
 
-  def get_file_url(key:)
+  def get_file_url(key:, bucket: @bucket)
     signer = Aws::S3::Presigner.new(client: @s3_client)
     signer.presigned_url(
       :get_object,
-      bucket: @bucket,
+      bucket: bucket,
       key:
     )
   end

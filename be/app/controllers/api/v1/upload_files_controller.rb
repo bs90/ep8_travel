@@ -26,9 +26,10 @@ class Api::V1::UploadFilesController < ApplicationController
   private
 
   def generate_uniq_key(file_name)
-    timestamp = Time.now.to_i
-    random_string = SecureRandom.hex(8)
-    "#{timestamp}_#{random_string}_#{file_name}"
+    extension = File.extname(file_name).downcase
+    is_video = MediaTypesConstant::VIDEO.include?(extension)
+    folder = is_video ? FileConstant::VIDEOS : FileConstant::PHOTOS
+    "#{folder}/#{Time.now.to_i}_#{SecureRandom.hex(8)}#{extension}"
   end
 
   def presigned_url_params
