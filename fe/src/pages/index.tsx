@@ -1,25 +1,16 @@
-"use client";
+import { redirect } from "next/navigation";
+import { HomePage } from "../components/templates/HomePage";
+import { useSession } from "next-auth/react";
 
-import { Provider } from "react-redux";
-import { persistStore } from "redux-persist";
-import { PersistGate } from "redux-persist/integration/react";
+export default function Home() {
+  const session = useSession();
 
-import { useStore } from "@/stores";
-import Test from "@/components/test.component";
-
-const Home = () => {
-  const store = useStore();
-  const persistor = persistStore(store);
-
+  if (!session) {
+    redirect("/signIn");
+  }
   return (
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <div>
-          <Test />
-        </div>
-      </PersistGate>
-    </Provider>
+    <main>
+      <HomePage />
+    </main>
   );
-};
-
-export default Home;
+}
