@@ -10,6 +10,7 @@ module Api::V1::RescueExceptions
       JWT::DecodeError,
       JWT::ExpiredSignature,
       JWT::VerificationError,
+      JWT::Base64DecodeError,
       with: :render_jwt_error
     )
 
@@ -35,8 +36,7 @@ module Api::V1::RescueExceptions
       render json: error.to_hash, status:
     end
 
-    def render_jwt_error(error, status: :unauthorized)
-      render json: Errors::Api::Jwt.new(error).to_hash, status:
+    def render_jwt_error(exception)
     end
   end
 end

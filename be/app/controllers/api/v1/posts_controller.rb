@@ -2,26 +2,13 @@ class Api::V1::PostsController < ApplicationController
   before_action :check_logged_in!, only: [:create]
 
   def index
-    pagy_info, posts = pagy_posts Post.includes(:upload_files).all.newest
-    render json: {
-      sucess: true,
-      data: {
-        posts:,
-        pagy_info:,
-      }
-    }
+    pagy_info, posts = pagy_posts Post.newest.includes(:upload_files)
+    render json: posts, each_serializer: Api::V1::PostSerializer
   end
 
   def show
-    post = Post.find(params[:id])
-    photo_url = S3Service.instance.get_file_url(key: post.upload_files[0][:key])
-    render json: {
-      success: true,
-      data: {
-        caption: post.caption,
-        photo_url:
-      }
-    }
+    post = Post.includes(:upload_files).find_by!(id: params[:id])
+    render json: post
   end
 
   def create
