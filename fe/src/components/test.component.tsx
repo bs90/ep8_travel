@@ -1,30 +1,55 @@
-"use client";
+import React from "react";
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/modal";
 
-import { useDispatch, useSelector } from "react-redux";
+export default function App() {
+  const {isOpen, onOpen, onClose} = useDisclosure();
+  const [size, setSize] = React.useState("md")
 
-import { userSlice } from "@/stores/user";
-import { RootState } from "@/stores";
+  const sizes = ["xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "full"];
 
-const Test = () => {
-  const dispatch = useDispatch();
-  const { user } = useSelector((state: RootState) => state.user);
-  const { updateUser } = userSlice.actions;
 
-  const testReduxDispatch = () => {
-    const testData = {
-      name: "test data 123",
-      age: 15,
-    };
-    dispatch(updateUser(testData));
-  };
+  const handleOpen = (size) => {
+    setSize(size)
+    onOpen();
+  }
 
   return (
-    <div>
-      <p style={{color: "#000000"}}>{ user.name }</p>
-      <button onClick={() => testReduxDispatch()}>Test Redux</button>
-    </div>
+    <>
+      <div className="flex flex-wrap gap-3">
+        {sizes.map((size) => (
+          <button key={size} onClick={() => handleOpen(size)}>Open {size}</button>
+        ))}  
+      </div>
+      <Modal 
+        size={size} 
+        isOpen={isOpen} 
+        onClose={onClose} 
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+              <ModalBody>
+                <p> 
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Nullam pulvinar risus non risus hendrerit venenatis.
+                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
+                </p>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Nullam pulvinar risus non risus hendrerit venenatis.
+                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
+                </p>
+                <p>
+                  Magna exercitation reprehenderit magna aute tempor cupidatat consequat elit
+                  dolor adipisicing. Mollit dolor eiusmod sunt ex incididunt cillum quis. 
+                  Velit duis sit officia eiusmod Lorem aliqua enim laboris do dolor eiusmod. 
+                </p>
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
   );
-
-};
-
-export default Test;
+}
